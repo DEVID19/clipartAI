@@ -1,10 +1,16 @@
 import axios from "axios";
 import Constants from "expo-constants";
 
-const BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL ||
-  Constants.expoConfig?.extra?.apiUrl ||
-  process.env.YOUR_MACHINE_IP;
+// const BASE_URL =
+//   process.env.EXPO_PUBLIC_API_URL ||
+//   Constants.expoConfig?.extra?.apiUrl ||
+//   process.env.YOUR_MACHINE_IP;
+
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+
+if (!BASE_URL) {
+  console.error("EXPO_PUBLIC_API_URL is not defined");
+}
 
 const api = axios.create({
   baseURL: BASE_URL,
