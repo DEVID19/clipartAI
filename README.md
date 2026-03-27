@@ -4,23 +4,6 @@
 
 ---
 
-## APK Download
-
-[Download APK from Google Drive](#) ← _Replace with your Drive link after building_
-
-## Screen Recording
-
-[Watch Full Walkthrough on Google Drive](#) ← _Replace with your Drive recording link_
-
----
-
-## App Screenshots
-
-| Upload Screen | Style Selection | Generating | Results Grid |
-|---|---|---|---|
-| Upload your photo from gallery or camera | Pick one or all 5 styles | Live skeleton loaders per style | Download or share any result |
-
----
 
 ## Features
 
@@ -34,7 +17,6 @@
 - Fullscreen viewer with pinch-to-zoom
 
 **Bonus / Extra**
-- Custom prompt editor to fine-tune generation
 - Generation history with thumbnails (persisted locally via Redux Persist)
 - Backend proxy — API keys never exposed to the client
 - Rate limiting: 5 generation requests per minute per IP
@@ -71,7 +53,7 @@
 | Node.js | 18+ | LTS, fast async |
 | Express | 4.18 | Minimal, battle-tested |
 | MongoDB + Mongoose | 8.x | Flexible schema for generation records |
-| Replicate API | — | Access to SDXL img2img for clipart |
+| HuggingFace API | — | img2img for clipart |
 | Sharp | 0.33 | Server-side image resize/validate |
 | express-rate-limit | 7.x | Abuse prevention |
 | Helmet | 7.x | HTTP security headers |
@@ -198,21 +180,17 @@ cd clipart-ai
 # Backend
 cd backend
 npm install
-cp .env.example .env
+cp .env
 # Fill in MONGODB_URI and REPLICATE_API_TOKEN in .env
 
 # Frontend
 cd ../frontend
 npm install
-cp .env.example .env
+cp .env
 ```
 
 ### 2. Get API Keys (Free)
 
-**Replicate API Token:**
-1. Sign up at [replicate.com](https://replicate.com)
-2. Go to Account → API tokens
-3. Copy token → paste into `backend/.env` as `REPLICATE_API_TOKEN`
 
 **MongoDB Atlas (Free):**
 1. Sign up at [cloud.mongodb.com](https://cloud.mongodb.com)
@@ -299,58 +277,39 @@ railway variables set MONGODB_URI=... REPLICATE_API_TOKEN=...
 
 ---
 
-## How to Submit
-
-1. Build APK using `eas build --platform android --profile preview`
-2. Download APK from EAS dashboard
-3. Upload APK to Google Drive → Get shareable link
-4. Record a 1-3 min screen recording showing:
-   - Upload flow (gallery pick)
-   - Style selection
-   - Generation with live skeleton loaders
-   - Results grid with completed images
-   - Download / share action
-5. Upload recording to Google Drive → Get shareable link
-6. Push code to GitHub
-7. Submit: APK link + Recording link + GitHub repo URL
-
 ---
 
-## Tradeoffs & Decisions
+## Environment Variables
 
-### Replicate over OpenAI DALL-E
-Replicate's SDXL supports img2img (image-to-image), which preserves the person's likeness better. DALL-E 3 doesn't support img2img natively. Replicate also has a free credits tier suitable for this assignment.
+### Backend (`backend/.env`)
 
-### Polling over WebSockets
-WebSockets add significant infrastructure complexity. Polling every 3 seconds is simple, reliable, and perfectly adequate for a ~30–60 second generation time. The UX is identical from the user's perspective.
+Create a `.env` file inside the backend folder and add:
 
-### Redux Toolkit over Zustand/Context
-RTK's `createSlice` + `createAsyncThunk` pattern is structured and scales well. The thunk pattern makes the generation state machine (idle → starting → processing → done) very readable. Redux Persist adds history without any extra backend.
+```env
+PORT=5000
+MONGODB_URI=your_mongodb_connection_string
+NODE_ENV=development
 
-### NativeWind over StyleSheet
-NativeWind allows writing Tailwind utility classes directly in JSX, making UI iteration extremely fast. For a time-constrained assignment this is the right tradeoff — the output is as performant as StyleSheet.
+ALLOWED_ORIGINS=*
 
-### Parallel style generation
-All selected styles hit Replicate simultaneously via `Promise.allSettled`. This means a 5-style batch takes the time of one generation, not five. Failed styles don't block others.
+MAX_FILE_SIZE_MB=10
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=50
 
-### Client-side image compression
-Images are resized to max 1024px and re-encoded to JPEG at 82% quality before upload, reducing payload size by 60-80% on typical phone photos. The server also validates and reprocesses with Sharp as a second layer.
+IMGBB_API_KEY=your_imgbb_api_key
+HUGGINGFACE_API_KEY=your_huggingface_api_key
 
-### MongoDB TTL index
-Generation records auto-expire after 7 days via a TTL index — no manual cleanup needed.
 
----
+## frontend/.env
 
-## Security
+# For deployed backend
+EXPO_PUBLIC_API_URL=https://your-app.onrender.com/api
 
-- API keys stored only in backend `.env`, never in the app bundle
-- Backend acts as proxy — client never touches Replicate directly
-- Input validation on both client and server (file type, size, style whitelist)
-- Rate limiting: global (50 req/15 min) + generation-specific (5 req/min)
-- Helmet.js sets security headers (XSS, CORS, etc.)
-- Base64 image validated with Sharp before processing (prevents fake image attacks)
+# For local development (optional)
+YOUR_MACHINE_IP=http://YOUR_LOCAL_IP:5000/api
 
----
+
+
 
 ## License
 
