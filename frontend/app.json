@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "Clipart AI",
+    "slug": "clipart-generator",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.clipartai.app"
+    },
+    "android": {
+      "package": "com.clipartai.app",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Clipart AI to access your photos to generate clipart.",
+          "cameraPermission": "Allow Clipart AI to use your camera to take a photo for clipart generation."
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow Clipart AI to save generated images to your gallery.",
+          "savePhotosPermission": "Allow Clipart AI to save generated cliparts."
+        }
+      ]
+    ],
+    "scheme": "clipartai",
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}
